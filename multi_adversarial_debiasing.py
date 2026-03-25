@@ -31,6 +31,138 @@ def _dense_array(x):
         return x.toarray()
     return np.asarray(x)
 
+# ordinal encoder metadata is not easily accessible, so we need to inspect the fitted transformers to find the categories for a given column.
+def _ordinal_metadata(preprocessor, col):
+    for name, transformer, cols in preprocessor.transformers_:
+        if name != "ord_ordenc":
+            continue
+        if cols is None:
+            continue
+        cols_list = list(cols)
+        if col not in cols_list:
+            continue
+        idx = cols_list.index(col)
+        if not hasattr(transformer, "categories_"):
+            return None
+        categories = list(transformer.categories_[idx])
+        return [str(v) for v in categories], len(categories)
+    return None
+
+
+def _onehot_target(xtr_smote, feature_names, col):
+    prefix = f"cat_ohe__{col}_"
+    indices = [i for i, name in enumerate(feature_names) if name.startswith(prefix)]
+    if not indices:
+        return None
+
+    block = xtr_smote[:, indices]
+    if len(indices) == 1:
+        targets = (block[:, 0] >= 0.5).astype(np.int64)
+        classes = [feature_names[indices[0]].split(prefix, 1)[-1]]
+    else:
+        targets = np.argmax(block, axis=1).astype(np.int64)
+        classes = [feature_names[i].split(prefix, 1)[-1] for i in indices]
+
+    return targets, classes
+
+# ordinal target for age
+def _ordinal_target(xtr_smote, feature_names, preprocessor, x_train_raw, col):
+    ord_name = f"ord_ordenc__{col}"
+    if ord_name not in feature_names:
+        return None
+
+    idx = feature_names.index(ord_name)
+    ordinal_vals = xtr_smote[:, idx]
+
+    metadata = _ordinal_metadata(preprocessor, col)
+    if metadata is not None:
+        classes, num_classes = metadata
+    elif hasattr(x_train_raw, "__getitem__") and col in x_train_raw:
+        # Fallback when encoder metadata is not available.
+        unique_vals = sorted(np.unique(np.asarray(x_train_raw[col])))
+        classes = [str(v) for v in unique_vals]
+        num_classes = len(classes)
+    else:
+        raise ValueError(
+            f"Could not infer ordinal classes for protected attribute '{col}'."
+        )
+
+    targets = np.rint(ordinal_vals).astype(np.int64)
+    targets = np.clip(targets, 0, max(num_classes - 1, 0))
+    return targets, classes
+
+def add_intersection_protected_target(
+    case, #intersection of multiple protected targets, e.g. "gender|age_group"
+    new_name,
+    source_cols,
+    min_count=20,
+    other_label="OTHER",
+    separator="|",
+):
+    missing = [c for c in source_cols if c not in case["protected_targets"]]
+    if missing:
+        raise ValueError(
+            f"Cannot create intersection '{new_name}'. Missing protected targets: {missing}"
+        )
+
+    arrays = [np.asarray(case["protected_targets"][c], dtype=np.int64) for c in source_cols]
+    lengths = {arr.shape[0] for arr in arrays}
+    if len(lengths) != 1:
+        raise ValueError(
+            f"Cannot create intersection '{new_name}'. Source target lengths differ: {sorted(lengths)}"
+        )
+
+    combos_arr = np.column_stack(arrays)
+    combos = [tuple(int(v) for v in row) for row in combos_arr]
+
+    counts = {}
+    for combo in combos:
+        counts[combo] = counts.get(combo, 0) + 1
+
+    frequent_combos = [
+        combo
+        for combo, count in sorted(counts.items(), key=lambda item: item[0])
+        if count >= min_count
+    ]
+    mapping = {combo: idx for idx, combo in enumerate(frequent_combos)}
+    has_rare = len(frequent_combos) < len(counts)
+    other_index = len(mapping) if has_rare else None
+
+    targets = np.empty(len(combos), dtype=np.int64)
+    for i, combo in enumerate(combos):
+        idx = mapping.get(combo, other_index)
+        if idx is None:
+            # No rare bucket in use, combo must exist in mapping.
+            idx = mapping[combo]
+        targets[i] = idx
+
+    classes = []
+    for combo in frequent_combos:
+        parts = []
+        for source_col, val in zip(source_cols, combo):
+            source_classes = case["protected_classes"][source_col]
+            if 0 <= val < len(source_classes):
+                parts.append(str(source_classes[val]))
+            else:
+                parts.append(f"{source_col}:{val}")
+        classes.append(separator.join(parts))
+    if has_rare:
+        classes.append(other_label)
+
+    case["protected_targets"][new_name] = targets
+    case["protected_classes"][new_name] = classes
+    if "protected_cols" in case and new_name not in case["protected_cols"]:
+        case["protected_cols"].append(new_name)
+
+    return {
+        "name": new_name,
+        "num_classes": len(classes),
+        "kept_combinations": len(frequent_combos),
+        "total_combinations": len(counts),
+        "rare_collapsed": has_rare,
+        "min_count": min_count,
+    }
+
 
 def prepare_smote_case_with_sensitive_labels(
     case_name,
@@ -53,18 +185,20 @@ def prepare_smote_case_with_sensitive_labels(
     protected_classes = {}
 
     for col in protected_cols:
-        prefix = f"cat_ohe__{col}_"
-        indices = [i for i, name in enumerate(feature_names) if name.startswith(prefix)]
-        if not indices:
-            raise ValueError(f"Could not locate one-hot encoded columns for protected attribute '{col}'.")
+        onehot = _onehot_target(xtr_smote, feature_names, col)
+        if onehot is not None:
+            protected_targets[col], protected_classes[col] = onehot
+            continue
 
-        block = xtr_smote[:, indices]
-        if len(indices) == 1:
-            protected_targets[col] = (block[:, 0] >= 0.5).astype(np.int64)
-            protected_classes[col] = [feature_names[indices[0]].split(prefix, 1)[-1]]
-        else:
-            protected_targets[col] = np.argmax(block, axis=1).astype(np.int64)
-            protected_classes[col] = [feature_names[i].split(prefix, 1)[-1] for i in indices]
+        ordinal = _ordinal_target(xtr_smote, feature_names, preprocessor, x_train_raw, col)
+        if ordinal is not None:
+            protected_targets[col], protected_classes[col] = ordinal
+            continue
+
+        raise ValueError(
+            f"Could not locate encoded columns for protected attribute '{col}'. "
+            "Expected one-hot ('cat_ohe__<col>_...') or ordinal ('ord_ordenc__<col>')."
+        )
 
     scaler = StandardScaler()
     xtr_np = scaler.fit_transform(xtr_smote).astype(np.float32)
