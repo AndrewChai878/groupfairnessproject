@@ -1267,7 +1267,7 @@ void Lighthouse::LENS(indd numberRules, bool verbose, indd samplesize, indd FLCa
 						}
 						if (valid) {
 							// MY STUFF
-							if ((_popcnt64(i) % 2) == 0) {   // __popcnt in Windows, __popcnt64 in 64-bit VC++
+							if ((__builtin_popcountll(static_cast<unsigned long long>(i)) % 2) == 0) {
 								support += cumulativeCubeSupport[index];
 								for (indd o = 0; o < O; ++o) {
 									trueCount[o] += cumulativeCubeTrue[o][index];

@@ -1,0 +1,10 @@
+case_alias,case,metric,mean,avg_gap,max_gap,n_groups,n_rows
+case4,Case 4,cost,1.0,0.0,0.0,74,756
+case4,Case 4,availability,0.756,0.3955205388132289,1.0,91,1000
+case4,Case 4,choice,6.833,3.8355563595897766,10.0,91,1000
+case5,Case 5,cost,1.0,0.0,0.0,83,846
+case5,Case 5,availability,0.846,0.2804868990024876,1.0,91,1000
+case5,Case 5,choice,8.076,2.891367828622091,10.0,91,1000
+case53,Case 5.3,cost,1.0,0.0,0.0,84,832
+case53,Case 5.3,availability,0.832,0.25155523127719287,1.0,90,1000
+case53,Case 5.3,choice,7.589,2.955380772571116,10.0,90,1000

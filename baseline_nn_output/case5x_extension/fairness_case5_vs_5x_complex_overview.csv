@@ -1,0 +1,13 @@
+case,label,attribute,n_groups,max_fpr,mean_fpr
+Case 5 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial debiasing,Case 5,Race_Age_intersection,31,0.22674418604651161,0.12229347114112801
+Case 5.1 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age,Case 5.1,Race_Age_intersection,31,0.2558139534883721,0.13962163097850822
+Case 5.2 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age intersections,Case 5.2,Race_Age_intersection,31,0.2091549295774648,0.15048759521074806
+Case 5.3 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + three-way age intersection,Case 5.3,Race_Age_intersection,31,0.23015873015873015,0.13981111906008029
+Case 5 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial debiasing,Case 5,Sex_Age_intersection,13,0.17159361196058442,0.11734881410562299
+Case 5.1 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age,Case 5.1,Sex_Age_intersection,13,0.19424460431654678,0.1318235990518197
+Case 5.2 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age intersections,Case 5.2,Sex_Age_intersection,13,0.18705035971223022,0.15504225333651458
+Case 5.3 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + three-way age intersection,Case 5.3,Sex_Age_intersection,13,0.2014388489208633,0.14203591668966756
+Case 5 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial debiasing,Case 5,Race_Sex_Age_intersection,35,0.2605633802816901,0.13372455722038018
+Case 5.1 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age,Case 5.1,Race_Sex_Age_intersection,35,0.28169014084507044,0.14985938677507224
+Case 5.2 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age intersections,Case 5.2,Race_Sex_Age_intersection,35,0.24347826086956523,0.160375759308238
+Case 5.3 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + three-way age intersection,Case 5.3,Race_Sex_Age_intersection,35,0.23809523809523808,0.14539944819113162

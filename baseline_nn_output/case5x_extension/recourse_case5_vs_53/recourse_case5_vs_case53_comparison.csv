@@ -1,0 +1,4 @@
+metric,case5_mean,case53_mean,mean_improved,case5_avg_gap,case53_avg_gap,avg_gap_improved,case5_max_gap,case53_max_gap,max_gap_improved,metric_major_improvement
+cost,1.0,1.0,False,0.0,0.0,False,0.0,0.0,False,False
+availability,0.846,0.832,False,0.2804868990024876,0.25155523127719287,True,1.0,1.0,False,False
+choice,8.076,7.589,False,2.891367828622091,2.955380772571116,False,10.0,10.0,False,False
