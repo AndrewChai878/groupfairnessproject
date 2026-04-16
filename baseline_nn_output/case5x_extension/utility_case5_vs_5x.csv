@@ -1,5 +1,0 @@
-case,label,accuracy,f1,roc_auc
-Case 5 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial debiasing,Case 5,0.8402735095267363,0.5208573404010141,0.8812957435807907
-Case 5.1 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age,Case 5.1,0.8391210817455439,0.5168435625288417,0.8807437710392494
-Case 5.2 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + age intersections,Case 5.2,0.8311309157959434,0.5141467727674623,0.8812699201403811
-Case 5.3 one-hot + ord-encoded + one-hot + SMOTE + multi-adversarial + three-way age intersection,Case 5.3,0.8354333128457283,0.5186516853932583,0.8830943476042115

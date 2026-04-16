@@ -18,4 +18,5 @@ _Presentation_: [https://drive.google.com/file/d/1ZowOEQo-qJiDwY_1efXHdkFIRgutBB
 3. Add the path where Boost is installed/stored to the `BOOST_INCLUDE_CANDIDATES` list in `exp.py` (see [here](https://github.com/AndrewChai878/groupfairnessproject/blob/da75ab1872ba494c2d8e605598354b8c9a7f5b21/exp.py#L5)).
 
 ## Usage
-1. Run all cells of `group_proj_classifier_nn_baseline.ipynb` from start to finish. The notebook will produce the results and visuals shown in the presentation.
+1. Run all cells of `neural_network_MADb.ipynb` from start to finish. The notebook will produce the results and visuals shown in the presentation.
+2. Checkout `nn_madb_outputs` folder for indepth analysis and access our stored models.
