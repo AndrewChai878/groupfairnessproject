@@ -1,1 +1,3 @@
 baseline_nn_output/models/*.pkl
+.DS_Store
+__pycache__/
