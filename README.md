@@ -2,7 +2,7 @@
 
 This repo represents the work of our group project for EECS 6320, in which we addressed the issue of strip searches during arrests (see the presentation linked below for more details).
 
-_Group_: G2 (Andrew Chai, Michael Murphy, Om Patel, Tirth Patel)
+_Group_: G2 (Andrew Chai, Michael Murphy, Omkumar Patel, Tirth Patel)
 
 _Title_: Analysing and reducing recourse bias in strip searches
 
