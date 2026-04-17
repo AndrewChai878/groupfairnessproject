@@ -11,6 +11,7 @@ _Presentation_: [https://drive.google.com/file/d/1ZowOEQo-qJiDwY_1efXHdkFIRgutBB
 ## Prerequisites
 - Python v3.12 (required for the fixed versions of the Python packages referenced in `requirements.txt`).
 - [Boost v1.84.x](https://www.boost.org/releases/1.84.0/) (make note of the path where Boost is installed, or where you store it).
+- A C++ compiler (to execute the rule mining via explanation tables) 
 
 ## Setup
 1. Clone this repository.
@@ -20,3 +21,6 @@ _Presentation_: [https://drive.google.com/file/d/1ZowOEQo-qJiDwY_1efXHdkFIRgutBB
 ## Usage
 1. Run all cells of `main_pipeline.ipynb` from start to finish. The notebook will produce the results and visuals shown in the presentation.
 2. Checkout `nn_madb_outputs` folder for indepth analysis and access our stored seeded models.
+
+## Acknowledgements/Citations
+This work uses recourse metrics and explanation tables as implemented in this  [article](https://link.springer.com/article/10.1007/s10796-026-10714-6).
